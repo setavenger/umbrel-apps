@@ -16,7 +16,7 @@ services:
     volumes:
       # Uncomment to mount your data directories inside
       # the Docker container for storing persistent data
-      - ${APP_DATA_DIR}/blindbit-oracle:/data
+      - ${APP_DATA_DIR}/blindbit-oracle:/data/blindbit-oracle
     environment:
       # Bitcoin Core connection details
       RPC_ENDPOINT: "http://${APP_BITCOIN_NODE_IP}:${APP_BITCOIN_RPC_PORT}"
