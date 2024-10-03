@@ -6,18 +6,27 @@ services:
       # <app-id>_<web-container-name>_1
       # e.g. 'btc-rpc-explorer_web_1'
       # Note that the '_1' at the end is needed
-      APP_HOST: blindbit_oracle_1
+      APP_HOST: blindbit-oracle_worker_1
       APP_PORT: 8080
+        # we can whitelist, nothing private is being collected by BlindBit Oracle
+      PROXY_AUTH_WHITELIST: "*"
   
   worker:
-    image: setavenger/blindbit-oracle:v0.1.0-test@sha256:31284624c4cb30285dc8b9e98f4735e4b71c7990e100a8fb97fd7678aa3c1b7a
+    image: setavenger/blindbit-oracle:v0.1.0-test@sha256:eda2cadcf3f131f4ae1a73a1b2132b8e6fc6e4929622b224ee2022a751931a18
     restart: on-failure
     stop_grace_period: 1m
     volumes:
       # Uncomment to mount your data directories inside
       # the Docker container for storing persistent data
-      - ${APP_DATA_DIR}/blindbit-oracle:/data/blindbit-oracle
+      - ${APP_DATA_DIR}/data:/root/.blindbit-oracle
     environment:
+      HOST: "0.0.0.0:8080"
+      CHAIN: main
+      SYNC_START_HEIGHT: 850000
+      MAX_PARALLEL_REQUESTS: 8
+      MAX_PARALLEL_TWEAK_COMPUTATIONS: 8
+      TWEAKS_CUT_THROUGH_WITH_DUST_FILTER: 1
+
       # Bitcoin Core connection details
       RPC_ENDPOINT: "http://${APP_BITCOIN_NODE_IP}:${APP_BITCOIN_RPC_PORT}"
       RPC_USER: $APP_BITCOIN_RPC_USER
