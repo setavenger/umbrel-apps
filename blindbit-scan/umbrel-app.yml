@@ -1,0 +1,31 @@
+manifestVersion: 1
+id: blindbit-scan
+category: bitcoin
+name: BlindBit Scan
+version: "0.1.0"
+tagline: Simple scanner for silent payments
+description: >-
+  BlindBit Scan is part of the BlindBit suite for running silent payment wallets. 
+  BlindBit Scan checks for new funds received to a silent payment wallet. 
+  It only requires the spend public key and the scan secret key.
+  The spend secret key is never needed for BlindBit Scan to find transactions and utxos belonging to the wallet.
+releaseNotes: >-
+  First release with basic functionality to find utxos.
+developer: Setor
+website: https://github.com/setavenger/blindbit-scan
+dependencies:
+  - bitcoin
+  - electrs
+  - blindbit-oracle
+repo: https://github.com/setavenger/blindbit-scan
+support: https://github.com/setavenger/blindbit-scan/issues
+port: 2305
+gallery:
+  - 1.jpg
+  - 2.jpg
+  - 3.jpg
+path: ""
+defaultUsername: "blindbit-scan-umbrel"
+deterministicPassword: true
+submitter: Setor
+submission: ""
