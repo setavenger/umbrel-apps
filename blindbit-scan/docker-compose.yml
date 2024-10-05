@@ -1,0 +1,52 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      # <app-id>_<web-container-name>_1
+      # e.g. 'btc-rpc-explorer_web_1'
+      # Note that the '_1' at the end is needed
+      APP_HOST: blindbit-scan_app_1
+      APP_PORT: 3000
+      # we can whitelist, we have internal auth in BlindBit Scan
+      PROXY_AUTH_WHITELIST: "*"
+
+  app:
+    image: setavenger/blindbit-scan-frontend:v0.1.0@sha256:6d66ed024f3a9e7b4f850f1a2374903cc18be16e6d93b891caa1dc8796e8da59
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      NEXT_PUBLIC_BLINDBIT_SCAN_BASE_URL: "http://${DEVICE_DOMAIN_NAME}:${APP_BLINDBIT_SCAN_NODE_PORT}"
+      NEXT_PUBLIC_BLINDBIT_SCAN_USER: "blindbit-scan-umbrel"
+      NEXT_PUBLIC_BLINDBIT_SCAN_PASSWORD: ${APP_PASSWORD}
+      NEXT_PUBLIC_BLINDBIT_SCAN_TOR_BASE_URL: "http://${APP_HIDDEN_SERVICE}:${APP_BLINDBIT_SCAN_NODE_PORT}"
+      # NEXT_PUBLIC_BLINDBIT_SCAN_PORT: ${APP_BLINDBIT_SCAN_NODE_PORT}
+  
+  worker:
+    image: setavenger/blindbit-scan:v0.1.0@sha256:00245f7444a2a76751d13dcf20e908901a8f1739cd516c2ddf88d51f9176c63e
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - ${APP_DATA_DIR}/data:/root/.blindbit-scan
+    ports:
+      - "${APP_BLINDBIT_SCAN_NODE_PORT}:${APP_BLINDBIT_SCAN_NODE_PORT}"
+    environment:
+      # Network configuration
+      EXPOSE_HTTP: "0.0.0.0:${APP_BLINDBIT_SCAN_NODE_PORT}"                       
+      BLINDBIT_SERVER: "http://${APP_BLINDBIT_ORACLE_NODE_IP}:${APP_BLINDBIT_ORACLE_NODE_PORT}"
+      ELECTRUM_SERVER: "${APP_ELECTRS_NODE_IP}:${APP_ELECTRS_NODE_PORT}"    
+      NETWORK_CHAIN: "main"                             
+      ELECTRUM_TOR: 0
+
+      # Wallet configuration
+      WALLET_DUST_LIMIT: 1000
+      WALLET_LABEL_COUNT: 1
+      WALLET_BIRTH_HEIGHT: 852000
+      # WALLET_SCAN_SECRET_KEY: "your-scan-secret-key"     
+      # WALLET_SPEND_PUB_KEY: "your-spend-pub-key"         
+
+      # Authentication
+      AUTH_USER: "blindbit-scan-umbrel"                        
+      AUTH_PASS: ${APP_PASSWORD}
+
+      LOG_LEVEL: trace
