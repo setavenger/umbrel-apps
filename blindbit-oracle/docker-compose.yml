@@ -3,21 +3,26 @@ version: "3.7"
 services:
   app_proxy:
     environment:
-      # <app-id>_<web-container-name>_1
-      # e.g. 'btc-rpc-explorer_web_1'
-      # Note that the '_1' at the end is needed
-      # APP_HOST: blindbit-oracle_worker_1
-      APP_HOST: ${APP_BLINDBIT_ORACLE_NODE_IP}
-      APP_PORT: ${APP_BLINDBIT_ORACLE_NODE_PORT}
-      # nothing private is being collected by BlindBit Oracle
-      PROXY_AUTH_ADD: "false"
+      APP_HOST: blindbit-oracle_app_1
+      APP_PORT: 3000
+
+  app:
+    image: setavenger/blindbit-oracle-frontend:dev-e828b25@sha256:5636a0f6a607c26216275d227b9cc3146e2bdde6c8ddb74e6de3a490a6674729
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      NEXT_PUBLIC_BLINDBIT_ORACLE_BASE_URL: "http://${DEVICE_DOMAIN_NAME}:${APP_BLINDBIT_ORACLE_NODE_PORT}"
+      NEXT_PUBLIC_BLINDBIT_ORACLE_TOR_BASE_URL: "http://${APP_BLINDBIT_ORACLE_API_HIDDEN_SERVICE}:${APP_BLINDBIT_ORACLE_NODE_PORT}"
+      NEXT_PUBLIC_BLINDBIT_ORACLE_PORT: ${APP_BLINDBIT_ORACLE_NODE_PORT}
   
   worker:
-    image: setavenger/blindbit-oracle:v0.1.0@sha256:cdeebe4b19ac5b71e54cf894059f397d212663f0f29d51094f2fc47eb7ea470e
+    image: setavenger/blindbit-oracle:dev-c926454@sha256:4dc82320d60dfef6a7267df9c2c513c09dc6d9d99a2eb708689e00f1c49d3e4e
     restart: on-failure
     stop_grace_period: 1m
     volumes:
       - ${APP_DATA_DIR}/data:/root/.blindbit-oracle
+    ports:
+      - "${APP_BLINDBIT_ORACLE_NODE_PORT}:${APP_BLINDBIT_ORACLE_NODE_PORT}"
     environment:
       HOST: "${APP_BLINDBIT_ORACLE_NODE_IP}:${APP_BLINDBIT_ORACLE_NODE_PORT}"
       CHAIN: main
@@ -33,3 +38,15 @@ services:
     networks:
       default:
         ipv4_address: $APP_BLINDBIT_ORACLE_NODE_IP
+
+  tor:
+    image: getumbrel/tor:0.4.7.8@sha256:2ace83f22501f58857fa9b403009f595137fa2e7986c4fda79d82a8119072b6a
+    user: "1000:1000"
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/torrc:/etc/tor/torrc:ro
+      - ${TOR_DATA_DIR}:/data
+    environment:
+      HOME: "/tmp"
+    networks:
+        default:

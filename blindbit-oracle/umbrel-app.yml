@@ -15,7 +15,7 @@ dependencies:
   - bitcoin
 repo: https://github.com/setavenger/blindbit-oracle
 support: https://github.com/setavenger/blindbit-oracle/issues
-port: 5728
+port: 2304
 gallery:
   - 1.jpg
   - 2.jpg

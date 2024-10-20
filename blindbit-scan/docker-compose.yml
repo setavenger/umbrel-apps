@@ -3,24 +3,21 @@ version: "3.7"
 services:
   app_proxy:
     environment:
-      # <app-id>_<web-container-name>_1
-      # e.g. 'btc-rpc-explorer_web_1'
-      # Note that the '_1' at the end is needed
       APP_HOST: blindbit-scan_app_1
       APP_PORT: 3000
       # we can whitelist, we have internal auth in BlindBit Scan
-      PROXY_AUTH_WHITELIST: "*"
+      PROXY_AUTH_ADD: "false"
 
   app:
-    image: setavenger/blindbit-scan-frontend:v0.1.0@sha256:6d66ed024f3a9e7b4f850f1a2374903cc18be16e6d93b891caa1dc8796e8da59
+    image: setavenger/blindbit-scan-frontend:dev-bd299ab@sha256:ae4ea99a726e481be13ef8fb6cee63241385f11c7daaf08ddf9a187ff424b405
     restart: on-failure
     stop_grace_period: 1m
     environment:
       NEXT_PUBLIC_BLINDBIT_SCAN_BASE_URL: "http://${DEVICE_DOMAIN_NAME}:${APP_BLINDBIT_SCAN_NODE_PORT}"
       NEXT_PUBLIC_BLINDBIT_SCAN_USER: "blindbit-scan-umbrel"
       NEXT_PUBLIC_BLINDBIT_SCAN_PASSWORD: ${APP_PASSWORD}
-      NEXT_PUBLIC_BLINDBIT_SCAN_TOR_BASE_URL: "http://${APP_HIDDEN_SERVICE}:${APP_BLINDBIT_SCAN_NODE_PORT}"
-      # NEXT_PUBLIC_BLINDBIT_SCAN_PORT: ${APP_BLINDBIT_SCAN_NODE_PORT}
+      NEXT_PUBLIC_BLINDBIT_SCAN_TOR_BASE_URL: "http://${APP_BLINDBIT_SCAN_API_HIDDEN_SERVICE}:${APP_BLINDBIT_SCAN_NODE_PORT}"
+      NEXT_PUBLIC_BLINDBIT_SCAN_PORT: ${APP_BLINDBIT_SCAN_NODE_PORT}
   
   worker:
     image: setavenger/blindbit-scan:v0.1.0@sha256:00245f7444a2a76751d13dcf20e908901a8f1739cd516c2ddf88d51f9176c63e
@@ -32,7 +29,7 @@ services:
       - "${APP_BLINDBIT_SCAN_NODE_PORT}:${APP_BLINDBIT_SCAN_NODE_PORT}"
     environment:
       # Network configuration
-      EXPOSE_HTTP: "0.0.0.0:${APP_BLINDBIT_SCAN_NODE_PORT}"                       
+      EXPOSE_HTTP: "${APP_BLINDBIT_SCAN_NODE_IP}:${APP_BLINDBIT_SCAN_NODE_PORT}"
       BLINDBIT_SERVER: "http://${APP_BLINDBIT_ORACLE_NODE_IP}:${APP_BLINDBIT_ORACLE_NODE_PORT}"
       ELECTRUM_SERVER: "${APP_ELECTRS_NODE_IP}:${APP_ELECTRS_NODE_PORT}"    
       NETWORK_CHAIN: "main"                             
@@ -50,3 +47,18 @@ services:
       AUTH_PASS: ${APP_PASSWORD}
 
       LOG_LEVEL: trace
+    networks:
+      default:
+        ipv4_address: $APP_BLINDBIT_SCAN_NODE_IP
+
+  tor:
+    image: getumbrel/tor:0.4.7.8@sha256:2ace83f22501f58857fa9b403009f595137fa2e7986c4fda79d82a8119072b6a
+    user: "1000:1000"
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/torrc:/etc/tor/torrc:ro
+      - ${TOR_DATA_DIR}:/data
+    environment:
+      HOME: "/tmp"
+    networks:
+        default:
