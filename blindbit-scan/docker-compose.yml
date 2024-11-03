@@ -5,8 +5,6 @@ services:
     environment:
       APP_HOST: blindbit-scan_app_1
       APP_PORT: 3000
-      # we can whitelist, we have internal auth in BlindBit Scan
-      PROXY_AUTH_ADD: "false"
 
   app:
     image: setavenger/blindbit-scan-frontend:dev-bd299ab@sha256:ae4ea99a726e481be13ef8fb6cee63241385f11c7daaf08ddf9a187ff424b405

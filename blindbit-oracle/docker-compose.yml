@@ -16,7 +16,7 @@ services:
       NEXT_PUBLIC_BLINDBIT_ORACLE_PORT: ${APP_BLINDBIT_ORACLE_NODE_PORT}
   
   worker:
-    image: setavenger/blindbit-oracle:dev-c926454@sha256:4dc82320d60dfef6a7267df9c2c513c09dc6d9d99a2eb708689e00f1c49d3e4e
+    image: setavenger/blindbit-oracle:dev-021f76b@sha256:55024ff80fd52d45ed8ce1e95980958e34476637105af124ee831363332314fa
     restart: on-failure
     stop_grace_period: 1m
     volumes:
@@ -26,9 +26,9 @@ services:
     environment:
       HOST: "${APP_BLINDBIT_ORACLE_NODE_IP}:${APP_BLINDBIT_ORACLE_NODE_PORT}"
       CHAIN: main
-      SYNC_START_HEIGHT: 850000
-      MAX_PARALLEL_REQUESTS: 8
-      MAX_PARALLEL_TWEAK_COMPUTATIONS: 8
+      SYNC_START_HEIGHT: 842300 # a couple hours before Bip 352 was merged
+      MAX_PARALLEL_REQUESTS: 4
+      MAX_PARALLEL_TWEAK_COMPUTATIONS: 4
       TWEAKS_CUT_THROUGH_WITH_DUST_FILTER: 1
 
       # Bitcoin Core connection details
