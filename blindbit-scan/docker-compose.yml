@@ -18,7 +18,7 @@ services:
       NEXT_PUBLIC_BLINDBIT_SCAN_PORT: ${APP_BLINDBIT_SCAN_NODE_PORT}
   
   worker:
-    image: setavenger/blindbit-scan:v0.1.0@sha256:00245f7444a2a76751d13dcf20e908901a8f1739cd516c2ddf88d51f9176c63e
+    image: setavenger/blindbit-scan:v0.1.1-rc.2@sha256:3dccc56fc25b8849bcc5f8a565dfc2cc1eecbd222a0e39c67db51c3c914f6951
     restart: on-failure
     stop_grace_period: 1m
     volumes:
