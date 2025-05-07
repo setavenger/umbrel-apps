@@ -35,7 +35,7 @@ services:
 
       # Wallet configuration
       WALLET_DUST_LIMIT: 1000
-      WALLET_LABEL_COUNT: 1
+      WALLET_LABEL_COUNT: 5
       WALLET_BIRTH_HEIGHT: 852000
       # WALLET_SCAN_SECRET_KEY: "your-scan-secret-key"     
       # WALLET_SPEND_PUB_KEY: "your-spend-pub-key"         
