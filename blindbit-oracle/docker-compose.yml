@@ -16,7 +16,7 @@ services:
       NEXT_PUBLIC_BLINDBIT_ORACLE_PORT: ${APP_BLINDBIT_ORACLE_NODE_PORT}
   
   worker:
-    image: setavenger/blindbit-oracle:dev-021f76b@sha256:55024ff80fd52d45ed8ce1e95980958e34476637105af124ee831363332314fa
+    image: setavenger/blindbit-oracle:dev-0ffb504@sha256:743b65a6df04e01e1dfbc9d16b0cc5acb9236d3488983b79fcdd6c973bd273b6
     restart: on-failure
     stop_grace_period: 1m
     volumes:
